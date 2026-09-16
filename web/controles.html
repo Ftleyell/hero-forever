@@ -1,0 +1,369 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>J2ME Game Controls</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Paleta extraída del HUD y sprites de HERO */
+            --bg-deep: #0a0807;
+            --stone-dark: #1b1713;
+            --stone-mid: #2b231b;
+            --bronze-shadow: #3b3023;
+            --bronze-border: #6d583b;
+            --gold-accent: #cfa851;
+            --gold-bright: #f5d77f;
+            --parchment: #ded3be;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'JetBrains Mono', monospace;
+            background: radial-gradient(circle at 50% 30%, #1c1611 0%, var(--bg-deep) 100%);
+            color: var(--parchment);
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-controller-module {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(180deg, var(--stone-mid) 0%, var(--stone-dark) 60%, #120e0b 100%);
+            border: 3px solid var(--bronze-border);
+            border-radius: 20px;
+            box-shadow: 0 0 0 4px var(--bronze-shadow), 0 0 0 6px #120f0c, 0 25px 60px rgba(0, 0, 0, 0.95), inset 0 1px 1px rgba(245, 215, 127, 0.3), inset 0 -3px 8px rgba(0, 0, 0, 0.8);
+            padding: 30px 24px;
+            box-sizing: border-box;
+        }
+
+            /* Detalle ornamental en las esquinas */
+            #game-controller-module::before,
+            #game-controller-module::after {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                pointer-events: none;
+            }
+
+            #game-controller-module::before {
+                top: 6px;
+                left: 6px;
+                border-top: 2px solid var(--gold-accent);
+                border-left: 2px solid var(--gold-accent);
+            }
+
+            #game-controller-module::after {
+                bottom: 6px;
+                right: 6px;
+                border-bottom: 2px solid var(--gold-accent);
+                border-right: 2px solid var(--gold-accent);
+            }
+
+        #pc-instructions {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .key-badge {
+            display: inline-block;
+            background: var(--bg-deep);
+            color: var(--gold-accent);
+            border: 1px solid var(--bronze-border);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0 3px;
+            font-weight: bold;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+        }
+
+        #mobile-controls {
+            display: none;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 10px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn-flat {
+            background: linear-gradient(180deg, var(--stone-mid) 0%, var(--stone-dark) 100%);
+            border: 2px solid var(--bronze-border);
+            color: var(--parchment);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            touch-action: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+            .btn-flat:active {
+                background: var(--stone-dark);
+                box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+                transform: translateY(2px);
+            }
+
+        .d-pad {
+            display: grid;
+            grid-template-columns: 55px 55px 55px;
+            grid-template-rows: 55px 55px 55px;
+            gap: 0;
+        }
+
+        .btn-up {
+            grid-column: 2;
+            grid-row: 1;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .btn-left {
+            grid-column: 1;
+            grid-row: 2;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .btn-right {
+            grid-column: 3;
+            grid-row: 2;
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .btn-down {
+            grid-column: 2;
+            grid-row: 3;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .d-pad-center {
+            grid-column: 2;
+            grid-row: 2;
+            background: var(--stone-mid);
+            border: none;
+        }
+
+        .action-pad {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        .items-row {
+            display: flex;
+            gap: 10px;
+        }
+
+            .items-row .btn-flat {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                font-family: 'JetBrains Mono', monospace;
+                color: var(--gold-accent);
+            }
+
+        .menu-row {
+            display: flex;
+            gap: 10px;
+        }
+
+            .menu-row .btn-flat {
+                width: 65px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+        .main-action-row .btn-attack {
+            width: 100px;
+            height: 60px;
+            font-size: 18px;
+            background: linear-gradient(180deg, #5c2c2c 0%, #3a1515 100%);
+            border-color: #8f4b4b;
+            color: var(--gold-bright);
+        }
+
+            .main-action-row .btn-attack:active {
+                background: #3a1515;
+                border-color: #5c2c2c;
+            }
+
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-end;
+                padding-bottom: 20px;
+            }
+
+            #pc-instructions {
+                display: none;
+            }
+
+            #mobile-controls {
+                display: flex;
+            }
+
+            #game-controller-module {
+                height: auto;
+                margin: 0 10px;
+                width: calc(100% - 20px);
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-controller-module">
+
+        <!-- PC Instructions -->
+        <div id="pc-instructions">
+            <p>Movement: <span class="key-badge">W</span> <span class="key-badge">A</span> <span class="key-badge">S</span> <span class="key-badge">D</span></p>
+            <p>Main Action: <span class="key-badge">SPACE</span> (OK/Attack)</p>
+            <p>Navigation: <span class="key-badge">E</span> (OK) | <span class="key-badge">Q</span> (Back)</p>
+            <p>Items: <span class="key-badge">1</span> <span class="key-badge">2</span> <span class="key-badge">3</span></p>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div id="mobile-controls">
+            <!-- Left: D-Pad -->
+            <div class="d-pad">
+                <div class="btn-flat btn-up" data-key="KeyW">▲</div>
+                <div class="btn-flat btn-left" data-key="KeyA">◀</div>
+                <div class="d-pad-center"></div>
+                <div class="btn-flat btn-right" data-key="KeyD">▶</div>
+                <div class="btn-flat btn-down" data-key="KeyS">▼</div>
+            </div>
+
+            <!-- Right: Action Buttons -->
+            <div class="action-pad">
+                <!-- Top Row: Items -->
+                <div class="items-row">
+                    <div class="btn-flat" data-key="Digit1">1</div>
+                    <div class="btn-flat" data-key="Digit2">2</div>
+                    <div class="btn-flat" data-key="Digit3">3</div>
+                </div>
+
+                <!-- Middle Row: Menu -->
+                <div class="menu-row">
+                    <div class="btn-flat" data-key="KeyQ">BACK</div>
+                    <div class="btn-flat" data-key="KeyE">OK</div>
+                </div>
+
+                <!-- Bottom Row: Action -->
+                <div class="main-action-row">
+                    <div class="btn-flat btn-attack" data-key="Space">ATTACK</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Función para inyectar la tecla perfecta
+        function enviarTeclaAlJuego(tipo, codigoTecla) {
+            const iframe = document.querySelector('iframe');
+
+            // Control de seguridad por si estamos probando esto fuera de index.html (como aquí)
+            if (!iframe || !iframe.contentDocument) {
+                console.log(`[JUEGO SIMULADO] ${tipo}: ${codigoTecla}`);
+                return;
+            }
+
+            const display = iframe.contentDocument.getElementById('display');
+            if (!display) {
+                console.log(`[ERROR] No se encontró el #display dentro del iframe.`);
+                return;
+            }
+
+            // Extraemos una letra simulada para que "e.key.length" no de error en el emulador
+            // Manejamos 'Key' para letras, 'Digit' para números y el caso especial de 'Space'
+            let letra = codigoTecla.replace('Key', '').replace('Digit', '');
+            if (codigoTecla === 'Space') letra = ' ';
+
+            // Creamos el evento con todo lo que handleKeyEvent exige
+            const evento = new KeyboardEvent(tipo, {
+                code: codigoTecla,       // Ej: 'KeyD'
+                key: letra,              // Ej: 'D' (crucial para e.key.charCodeAt)
+                ctrlKey: false,          // El código original pide esto
+                shiftKey: false,         // El código original pide esto
+                bubbles: true,
+                cancelable: true
+            });
+
+            display.dispatchEvent(evento);
+        }
+
+        // Conectamos los toques reales de la pantalla
+        const botones = document.querySelectorAll('.btn-flat');
+
+        botones.forEach(boton => {
+            const codigo = boton.getAttribute('data-key'); // Ej: 'KeyD'
+            if (!codigo) return;
+
+            // Al presionar el dedo
+            boton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                enviarTeclaAlJuego('keydown', codigo);
+            }, { passive: false });
+
+            // Al soltar el dedo
+            const soltar = (e) => {
+                e.preventDefault();
+                enviarTeclaAlJuego('keyup', codigo);
+            };
+
+            boton.addEventListener('touchend', soltar, { passive: false });
+            boton.addEventListener('touchcancel', soltar, { passive: false });
+
+            // --- Soporte extra para el ratón (Para hacer click en PC durante pruebas visuales) ---
+            boton.addEventListener('mousedown', () => enviarTeclaAlJuego('keydown', codigo));
+            boton.addEventListener('mouseup', () => enviarTeclaAlJuego('keyup', codigo));
+            boton.addEventListener('mouseleave', (e) => {
+                if (e.buttons === 1) enviarTeclaAlJuego('keyup', codigo);
+            });
+        });
+
+        // --- Mantenemos el soporte de teclado físico mapeado a la nueva lógica ---
+        const keyToCodeMap = {
+            'w': 'KeyW', 'a': 'KeyA', 's': 'KeyS', 'd': 'KeyD',
+            'q': 'KeyQ', 'e': 'KeyE', ' ': 'Space',
+            '1': 'Digit1', '2': 'Digit2', '3': 'Digit3'
+        };
+
+        window.addEventListener('keydown', (e) => {
+            const code = keyToCodeMap[e.key.toLowerCase()];
+            if (code && !e.repeat) {
+                if (e.key === ' ') e.preventDefault();
+                enviarTeclaAlJuego('keydown', code);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            const code = keyToCodeMap[e.key.toLowerCase()];
+            if (code) {
+                enviarTeclaAlJuego('keyup', code);
+            }
+        });
+    </script>
+</body>
+</html>
