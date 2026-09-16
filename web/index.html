@@ -163,7 +163,6 @@
             z-index: 5;
         }
 
-        /* Botón de Pantalla Completa flotante, semitransparente, en la esquina superior */
         .btn-fullscreen-overlay {
             position: absolute;
             top: 12px;
@@ -299,6 +298,7 @@
             padding: 30px 24px;
             box-sizing: border-box;
             min-width: 320px;
+            flex-shrink: 0;
         }
 
             #game-controller-module::before,
@@ -494,8 +494,8 @@
             }
 
             .phone-wrapper {
-                margin-right: -90px;
-                margin-bottom: -110px;
+                margin-right: 0;
+                margin-bottom: 0;
             }
         }
 
@@ -505,7 +505,7 @@
             }
 
             .phone-wrapper {
-                margin-bottom: -230px;
+                margin-bottom: 0;
             }
         }
 
@@ -627,7 +627,7 @@
                 <div class="screen-bezel" id="screenBezel">
                     <div class="screen-glare"></div>
 
-                    <!-- Botón Fullscreen flotante en la esquina superior total de la pantalla del juego -->
+                    <!-- Botón Fullscreen flotante en la esquina superior -->
                     <div class="btn-fullscreen-overlay" id="btnFullscreen" title="Pantalla Completa">⛶</div>
 
                     <div id="loadingOverlay" class="loading-overlay" title="Click para forzar visualización">
@@ -648,9 +648,8 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 2: Los Controles -->
+        <!-- SECCIÓN 2: El Módulo de Controles / Instrucciones de PC -->
         <div id="game-controller-module">
-
             <div id="pc-instructions">
                 <p>Movement: <span class="key-badge">W</span> <span class="key-badge">A</span> <span class="key-badge">S</span> <span class="key-badge">D</span></p>
                 <p>Main Action: <span class="key-badge">SPACE</span> (OK/Attack)</p>
@@ -668,30 +667,24 @@
                     <div class="btn-flat btn-down" data-key="KeyS">▼</div>
                 </div>
 
-                <!-- Derecha: Botones de Acción (Restaurados a su distribución original) -->
+                <!-- Derecha: Botones de Acción -->
                 <div class="action-pad">
-
-                    <!-- Fila Superior: Menú -->
                     <div class="menu-row">
                         <div class="btn-flat" data-key="KeyQ">BACK</div>
                         <div class="btn-flat" data-key="KeyE">OK</div>
                     </div>
 
-                    <!-- Fila Media: Acción Principal -->
                     <div class="main-action-row">
                         <div class="btn-flat btn-attack" data-key="Space">ATTACK</div>
                     </div>
 
-                    <!-- Fila Inferior: Ítems -->
                     <div class="items-row">
                         <div class="btn-flat" data-key="Digit1">1</div>
                         <div class="btn-flat" data-key="Digit2">2</div>
                         <div class="btn-flat" data-key="Digit3">3</div>
                     </div>
-
                 </div>
             </div>
-
         </div>
 
     </div>
