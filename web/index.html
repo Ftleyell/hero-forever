@@ -18,7 +18,6 @@
         :root {
             --bezel-w: 704px;
             --bezel-h: 880px;
-            /* Paleta extraída del HUD y sprites de HERO */
             --bg-deep: #0a0807;
             --stone-dark: #1b1713;
             --stone-mid: #2b231b;
@@ -49,7 +48,6 @@
             overflow-y: auto;
         }
 
-        /* DISEÑO PRINCIPAL: Flexbox para PC (lado a lado) y Móvil (arriba y abajo) */
         .main-layout {
             display: flex;
             flex-direction: row;
@@ -60,7 +58,6 @@
             max-width: 1500px;
         }
 
-        /* --- ESTILOS DEL TELÉFONO / EMULADOR --- */
         .phone-wrapper {
             position: relative;
             display: flex;
@@ -166,6 +163,35 @@
             z-index: 5;
         }
 
+        /* Botón de Pantalla Completa flotante, semitransparente, en la esquina superior */
+        .btn-fullscreen-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 25;
+            width: 44px;
+            height: 44px;
+            background: rgba(27, 23, 19, 0.75);
+            backdrop-filter: blur(4px);
+            border: 2px solid var(--bronze-border);
+            color: var(--gold-bright);
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: background 0.2s ease, transform 0.1s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+            .btn-fullscreen-overlay:active {
+                background: rgba(18, 14, 11, 0.95);
+                transform: scale(0.92);
+            }
+
         iframe#gameFrame {
             width: 100%;
             height: 100%;
@@ -264,25 +290,6 @@
             letter-spacing: 1px;
         }
 
-        .game-footer {
-            width: 100%;
-            margin-top: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 6px;
-        }
-
-        .footer-runes {
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
-            color: var(--bronze-border);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-
-        /* --- ESTILOS DEL MÓDULO DE CONTROLES --- */
         #game-controller-module {
             position: relative;
             background: linear-gradient(180deg, var(--stone-mid) 0%, var(--stone-dark) 60%, #120e0b 100%);
@@ -370,7 +377,6 @@
 
         .d-pad {
             display: grid;
-            /* Se aumentó el tamaño a 75px por tecla para mayor accesibilidad */
             grid-template-columns: 75px 75px 75px;
             grid-template-rows: 75px 75px 75px;
             gap: 0;
@@ -379,7 +385,6 @@
             .d-pad .btn-flat {
                 font-size: 24px;
             }
-        /* Iconos de flechas más grandes */
 
         .btn-up {
             grid-column: 2;
@@ -462,9 +467,6 @@
                 font-size: 20px;
             }
 
-        /* --- RESPONSIVIDAD Y ADAPTACIÓN --- */
-
-        /* Cuando la pantalla es menor a 1200px (Tablets y Móviles), apilamos los elementos */
         @media (max-width: 1200px) {
             .main-layout {
                 flex-direction: column;
@@ -481,13 +483,11 @@
 
             #game-controller-module {
                 width: 100%;
-                /* Alineado al ancho visual exacto del teléfono a escala 0.75 */
                 max-width: 570px;
                 padding: 24px;
             }
         }
 
-        /* Compensación de márgenes en PC (Mantiene todo centrado y sin huecos) */
         @media (max-height: 1040px) and (min-width: 1201px) {
             .phone-housing {
                 transform: scale(0.88);
@@ -508,228 +508,16 @@
                 margin-bottom: -230px;
             }
         }
-        /* Escalado dinámico y exacto para celulares (Elimina bordes laterales) */
+
         @media (max-height: 760px), (max-width: 800px) {
             body {
                 padding: 0;
                 background: var(--bg-deep);
-                height: 100vh; /* Fija la altura al total de la pantalla */
-                height: 100dvh; /* Soporte para navegadores móviles modernos */
-                overflow: hidden; /* Evita que se pueda hacer scroll */
-            }
-
-            .main-layout {
-                gap: 0;
-                height: 100%; /* Ocupa el 100% de la pantalla */
-                display: flex;
-                flex-direction: column;
-            }
-
-            .phone-wrapper {
-                width: 100%;
-                flex: 1 1 0; /* Toma todo el espacio disponible superior dinámicamente */
-                min-height: 0; /* Fundamental para que flexbox pueda encoger el contenido */
-                margin-bottom: 0; /* Eliminamos el margen negativo anterior */
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                height: 100vh;
+                height: 100dvh;
                 overflow: hidden;
             }
 
-            .phone-housing {
-                transform: none; /* Eliminamos el zoom fijo que rompía la altura */
-                width: 100%;
-                height: 100%;
-                max-width: 100%;
-                padding: 10px 0; /* Minimizamos los márgenes */
-                border-radius: 0;
-                border: none;
-                box-shadow: none;
-                background: transparent;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-
-                /* Ocultamos los adornos en celular para darle 100% prioridad a la pantalla del juego */
-                .game-header, .game-footer, .phone-housing::before, .phone-housing::after {
-                    display: none;
-                }
-
-            .screen-bezel {
-                width: 100%;
-                height: auto;
-                max-height: 100%; /* Nunca será más alto que el espacio disponible */
-                aspect-ratio: 176 / 220; /* Mantiene la proporción J2ME perfecta */
-                margin: 0 auto;
-                border-radius: 4px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.8);
-            }
-
-            #game-controller-module {
-                width: 100vw;
-                max-width: 100%;
-                padding: 15px 10px 25px 10px;
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
-                border-bottom: none;
-                border-top: 3px solid var(--bronze-border);
-                flex-shrink: 0; /* Asegura que el contenedor de botones nunca se aplaste */
-                box-shadow: 0 -5px 20px rgba(0,0,0,0.9);
-            }
-
-            /* Ajuste ligero para celulares, manteniendo los botones grandes */
-            .d-pad {
-                grid-template-columns: 60px 60px 60px;
-                grid-template-rows: 60px 60px 60px;
-            }
-
-            .action-pad {
-                gap: 15px;
-            }
-
-            .menu-row .btn-flat {
-                width: 75px;
-                height: 50px;
-                font-size: 14px;
-            }
-
-            .main-action-row .btn-attack {
-                width: 120px;
-                height: 70px;
-                font-size: 18px;
-            }
-
-            .items-row .btn-flat {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
-            }
-        }
-
-        /* Escalado pequeño (Teléfonos móviles puros) */
-        @media (max-height: 760px), (max-width: 800px) {
-            .phone-housing {
-                transform: scale(0.6);
-            }
-
-            .phone-wrapper {
-                margin-bottom: -370px;
-            }
-
-            #game-controller-module {
-                /* Alineado al ancho visual exacto del teléfono a escala 0.60 */
-                max-width: 456px;
-                padding: 20px 15px;
-            }
-
-            /* Ajuste ligero para celulares muy estrechos, evitando que los botones se salgan de la pantalla */
-            .d-pad {
-                grid-template-columns: 60px 60px 60px;
-                grid-template-rows: 60px 60px 60px;
-            }
-
-            .action-pad {
-                gap: 15px;
-            }
-
-            .menu-row .btn-flat {
-                width: 75px;
-                height: 50px;
-                font-size: 14px;
-            }
-
-            .main-action-row .btn-attack {
-                width: 120px;
-                height: 70px;
-                font-size: 18px;
-            }
-
-            .items-row .btn-flat {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
-            }
-        }
-        /* --- RESPONSIVIDAD Y ADAPTACIÓN --- */
-
-        /* Cuando la pantalla es menor a 1200px (Tablets y Móviles), apilamos los elementos */
-        @media (max-width: 1200px) {
-            .main-layout {
-                flex-direction: column;
-                gap: 30px;
-            }
-
-            #pc-instructions {
-                display: none;
-            }
-
-            #mobile-controls {
-                display: flex;
-            }
-
-            #game-controller-module {
-                width: 100%;
-                max-width: 750px;
-                padding: 20px 10px;
-            }
-            /* Anula márgenes laterales negativos en modo columna para evitar solapamientos */
-            .phone-wrapper {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-        }
-
-        /* Pantallas de PC medias */
-        @media (max-height: 1040px) and (min-width: 1201px) {
-            .phone-housing {
-                transform: scale(0.88);
-                transform-origin: top center;
-            }
-            /* El margen se reduce con precisión matemática para no invadir el panel de controles */
-            .phone-wrapper {
-                margin-bottom: -125px;
-                margin-right: -40px;
-            }
-        }
-
-        /* Laptops pequeñas (PC) */
-        @media (max-height: 900px) and (min-width: 1201px) {
-            .phone-housing {
-                transform: scale(0.75);
-                transform-origin: top center;
-            }
-            /* Ajuste exacto de la escala al 75% sin encimarse */
-            .phone-wrapper {
-                margin-bottom: -260px;
-                margin-right: -90px;
-            }
-        }
-
-        /* Tablets (Apilados) */
-        @media (max-width: 1200px) and (min-width: 801px) {
-            .phone-housing {
-                transform: scale(0.75);
-                transform-origin: top center;
-            }
-            /* Al estar en columna, solo compensamos la altura perdida, nunca el ancho */
-            .phone-wrapper {
-                margin-bottom: -260px;
-            }
-        }
-
-        /* Escalado dinámico y exacto para celulares (Elimina bordes laterales) */
-        @media (max-height: 760px), (max-width: 800px) {
-            body {
-                padding: 0;
-                background: var(--bg-deep);
-                height: 100vh; /* Fija la altura al total de la pantalla */
-                height: 100dvh; /* Soporte para navegadores móviles modernos */
-                overflow: hidden; /* Evita que se pueda hacer scroll */
-            }
-
             .main-layout {
                 gap: 0;
                 height: 100%;
@@ -739,9 +527,9 @@
 
             .phone-wrapper {
                 width: 100%;
-                flex: 1 1 0; /* Toma todo el espacio disponible superior dinámicamente */
+                flex: 1 1 0;
                 min-height: 0;
-                margin-bottom: 0 !important; /* Eliminamos el margen negativo en celulares */
+                margin-bottom: 0;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -764,7 +552,6 @@
                 align-items: center;
             }
 
-                /* Ocultamos los adornos en celular para darle 100% prioridad a la pantalla del juego */
                 .game-header, .game-footer, .phone-housing::before, .phone-housing::after {
                     display: none;
                 }
@@ -773,7 +560,7 @@
                 width: 100%;
                 height: auto;
                 max-height: 100%;
-                aspect-ratio: 176 / 220; /* Mantiene la proporción J2ME perfecta */
+                aspect-ratio: 176 / 220;
                 margin: 0 auto;
                 border-radius: 4px;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.8);
@@ -792,7 +579,6 @@
                 box-shadow: 0 -5px 20px rgba(0,0,0,0.9);
             }
 
-            /* Ajuste ligero para celulares, manteniendo los botones grandes */
             .d-pad {
                 grid-template-columns: 60px 60px 60px;
                 grid-template-rows: 60px 60px 60px;
@@ -819,6 +605,7 @@
                 height: 50px;
                 font-size: 18px;
             }
+        }
     </style>
 </head>
 <body>
@@ -839,6 +626,9 @@
 
                 <div class="screen-bezel" id="screenBezel">
                     <div class="screen-glare"></div>
+
+                    <!-- Botón Fullscreen flotante en la esquina superior total de la pantalla del juego -->
+                    <div class="btn-fullscreen-overlay" id="btnFullscreen" title="Pantalla Completa">⛶</div>
 
                     <div id="loadingOverlay" class="loading-overlay" title="Click para forzar visualización">
                         <div class="loading-rune-ring">
@@ -878,7 +668,7 @@
                     <div class="btn-flat btn-down" data-key="KeyS">▼</div>
                 </div>
 
-                <!-- Derecha: Botones de Acción (Reordenados) -->
+                <!-- Derecha: Botones de Acción (Restaurados a su distribución original) -->
                 <div class="action-pad">
 
                     <!-- Fila Superior: Menú -->
@@ -892,7 +682,7 @@
                         <div class="btn-flat btn-attack" data-key="Space">ATTACK</div>
                     </div>
 
-                    <!-- Fila Inferior: Ítems (Movida hacia abajo) -->
+                    <!-- Fila Inferior: Ítems -->
                     <div class="items-row">
                         <div class="btn-flat" data-key="Digit1">1</div>
                         <div class="btn-flat" data-key="Digit2">2</div>
@@ -907,7 +697,6 @@
     </div>
 
     <script>
-        // --- 1. LÓGICA DEL EMULADOR Y PANTALLA DE CARGA ---
         const gameFrame = document.getElementById('gameFrame');
         const loadingOverlay = document.getElementById('loadingOverlay');
         let checkTimer = null;
@@ -928,14 +717,14 @@
                     const resetStyle = doc.createElement('style');
                     resetStyle.id = 'j2me-viewport-fix';
                     resetStyle.textContent = `
-                                html, body, #screen-area {
-                                    margin: 0 !important;
-                                    padding: 0 !important;
-                                    background-color: #000000 !important;
-                                    background: #000000 !important;
-                                    overflow: hidden !important;
-                                }
-                            `;
+                            html, body, #screen-area {
+                                margin: 0 !important;
+                                padding: 0 !important;
+                                background-color: #000000 !important;
+                                background: #000000 !important;
+                                overflow: hidden !important;
+                            }
+                        `;
                     if (doc.head) doc.head.appendChild(resetStyle);
                 }
             } catch (err) { }
@@ -994,8 +783,24 @@
         loadingOverlay.addEventListener('click', dismissOverlay);
         setTimeout(dismissOverlay, 10000);
 
+        const btnFullscreen = document.getElementById('btnFullscreen');
+        if (btnFullscreen) {
+            const toggleFullscreen = (e) => {
+                e.preventDefault();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Error al habilitar pantalla completa: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            };
+            btnFullscreen.addEventListener('touchstart', toggleFullscreen, { passive: false });
+            btnFullscreen.addEventListener('click', toggleFullscreen);
+        }
 
-        // --- 2. LÓGICA DE LOS CONTROLES Y TECLADO ---
         function enviarTeclaAlJuego(tipo, codigoTecla) {
             if (!gameFrame || !gameFrame.contentDocument) return;
 
