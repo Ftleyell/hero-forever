@@ -2,37 +2,856 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Juego J2ME</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HERO:FOREVER</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+
     <style>
+        :root {
+            --bezel-w: 704px;
+            --bezel-h: 880px;
+            --bg-deep: #0a0807;
+            --stone-dark: #1b1713;
+            --stone-mid: #2b231b;
+            --bronze-shadow: #3b3023;
+            --bronze-border: #6d583b;
+            --gold-accent: #cfa851;
+            --gold-bright: #f5d77f;
+            --parchment: #ded3be;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
-        body, html {
+        body {
+            background: radial-gradient(circle at 50% 30%, #1c1611 0%, var(--bg-deep) 100%);
+            color: var(--parchment);
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .main-layout {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
             width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000;
+            max-width: 1500px;
         }
 
-        iframe {
+        .phone-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: margin 0.2s ease;
+        }
+
+        .phone-housing {
+            position: relative;
+            background: linear-gradient(180deg, var(--stone-mid) 0%, var(--stone-dark) 60%, #120e0b 100%);
+            border: 3px solid var(--bronze-border);
+            border-radius: 20px;
+            padding: 20px 24px 28px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 0 4px var(--bronze-shadow), 0 0 0 6px #120f0c, 0 25px 60px rgba(0, 0, 0, 0.95), inset 0 1px 1px rgba(245, 215, 127, 0.3), inset 0 -3px 8px rgba(0, 0, 0, 0.8);
+            transform-origin: center top;
+            transition: transform 0.2s ease;
+        }
+
+            .phone-housing::before,
+            .phone-housing::after {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                pointer-events: none;
+            }
+
+            .phone-housing::before {
+                top: 6px;
+                left: 6px;
+                border-top: 2px solid var(--gold-accent);
+                border-left: 2px solid var(--gold-accent);
+            }
+
+            .phone-housing::after {
+                bottom: 6px;
+                right: 6px;
+                border-bottom: 2px solid var(--gold-accent);
+                border-right: 2px solid var(--gold-accent);
+            }
+
+        .game-header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 8px;
+        }
+
+        .game-logo-img {
+            max-width: 210px;
+            height: auto;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9));
+        }
+
+        .header-filigree {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+            gap: 12px;
+        }
+
+        .filigree-line {
+            height: 2px;
+            flex: 1;
+            background: linear-gradient(90deg, transparent, var(--bronze-border), var(--gold-accent), transparent);
+        }
+
+        .filigree-gem {
+            width: 8px;
+            height: 8px;
+            background: var(--gold-bright);
+            transform: rotate(45deg);
+            box-shadow: 0 0 8px var(--gold-bright);
+        }
+
+        .screen-bezel {
+            position: relative;
+            width: var(--bezel-w);
+            height: var(--bezel-h);
+            background-color: #000000;
+            outline: 2px solid var(--stone-dark);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.95), 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        .screen-glare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 45%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 60%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .btn-fullscreen-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 25;
+            width: 44px;
+            height: 44px;
+            background: rgba(27, 23, 19, 0.75);
+            backdrop-filter: blur(4px);
+            border: 2px solid var(--bronze-border);
+            color: var(--gold-bright);
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: background 0.2s ease, transform 0.1s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+            .btn-fullscreen-overlay:active {
+                background: rgba(18, 14, 11, 0.95);
+                transform: scale(0.92);
+            }
+
+        iframe#gameFrame {
             width: 100%;
             height: 100%;
             border: none;
+            margin: 0;
+            padding: 0;
+            outline: none;
             display: block;
-            /* Algoritmo de escalado nítido para Pixel Art */
+            background-color: #000;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, #1c1611 0%, #080605 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 20;
+            cursor: pointer;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+            .loading-overlay.hidden {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+
+        .loading-rune-ring {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner-rune {
+            width: 64px;
+            height: 64px;
+            border: 2px dashed var(--bronze-border);
+            border-top: 3px solid var(--gold-bright);
+            border-right: 3px solid var(--gold-accent);
+            border-radius: 50%;
+            animation: runeSpin 1.4s linear infinite;
+        }
+
+        .spinner-core {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--gold-bright);
+            border-radius: 50%;
+            filter: blur(3px);
+            animation: pulseGlow 1.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes runeSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulseGlow {
+            from {
+                transform: scale(0.75);
+                opacity: 0.5;
+            }
+
+            to {
+                transform: scale(1.3);
+                opacity: 0.95;
+            }
+        }
+
+        .loading-title {
+            font-family: 'Cinzel', serif;
+            font-size: 15px;
+            color: var(--gold-bright);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .loading-subtitle {
+            font-size: 11px;
+            color: #8c7b66;
+            letter-spacing: 1px;
+        }
+
+        #game-controller-module {
+            position: relative;
+            background: linear-gradient(180deg, var(--stone-mid) 0%, var(--stone-dark) 60%, #120e0b 100%);
+            border: 3px solid var(--bronze-border);
+            border-radius: 20px;
+            box-shadow: 0 0 0 4px var(--bronze-shadow), 0 0 0 6px #120f0c, 0 25px 60px rgba(0, 0, 0, 0.95), inset 0 1px 1px rgba(245, 215, 127, 0.3), inset 0 -3px 8px rgba(0, 0, 0, 0.8);
+            padding: 30px 24px;
+            box-sizing: border-box;
+            min-width: 320px;
+            flex-shrink: 0;
+        }
+
+            #game-controller-module::before,
+            #game-controller-module::after {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                pointer-events: none;
+            }
+
+            #game-controller-module::before {
+                top: 6px;
+                left: 6px;
+                border-top: 2px solid var(--gold-accent);
+                border-left: 2px solid var(--gold-accent);
+            }
+
+            #game-controller-module::after {
+                bottom: 6px;
+                right: 6px;
+                border-bottom: 2px solid var(--gold-accent);
+                border-right: 2px solid var(--gold-accent);
+            }
+
+        #pc-instructions {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .key-badge {
+            display: inline-block;
+            background: var(--bg-deep);
+            color: var(--gold-accent);
+            border: 1px solid var(--bronze-border);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0 3px;
+            font-weight: bold;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+        }
+
+        #mobile-controls {
+            display: none;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 10px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn-flat {
+            background: linear-gradient(180deg, var(--stone-mid) 0%, var(--stone-dark) 100%);
+            border: 2px solid var(--bronze-border);
+            color: var(--parchment);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            touch-action: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+            .btn-flat:active {
+                background: var(--stone-dark);
+                box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+                transform: translateY(2px);
+            }
+
+        .d-pad {
+            display: grid;
+            grid-template-columns: 75px 75px 75px;
+            grid-template-rows: 75px 75px 75px;
+            gap: 0;
+        }
+
+            .d-pad .btn-flat {
+                font-size: 24px;
+            }
+
+        .btn-up {
+            grid-column: 2;
+            grid-row: 1;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .btn-left {
+            grid-column: 1;
+            grid-row: 2;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .btn-right {
+            grid-column: 3;
+            grid-row: 2;
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .btn-down {
+            grid-column: 2;
+            grid-row: 3;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .d-pad-center {
+            grid-column: 2;
+            grid-row: 2;
+            background: var(--stone-mid);
+            border: none;
+        }
+
+        .action-pad {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .menu-row {
+            display: flex;
+            gap: 12px;
+        }
+
+            .menu-row .btn-flat {
+                width: 85px;
+                height: 55px;
+                font-size: 16px;
+            }
+
+        .main-action-row .btn-attack {
+            width: 140px;
+            height: 80px;
+            font-size: 22px;
+            background: linear-gradient(180deg, #5c2c2c 0%, #3a1515 100%);
+            border-color: #8f4b4b;
+            color: var(--gold-bright);
+        }
+
+            .main-action-row .btn-attack:active {
+                background: #3a1515;
+                border-color: #5c2c2c;
+            }
+
+        .items-row {
+            display: flex;
+            gap: 15px;
+        }
+
+            .items-row .btn-flat {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                font-family: 'JetBrains Mono', monospace;
+                color: var(--gold-accent);
+                font-size: 20px;
+            }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            #pc-instructions {
+                display: none;
+            }
+
+            #mobile-controls {
+                display: flex;
+            }
+
+            #game-controller-module {
+                width: 100%;
+                max-width: 570px;
+                padding: 24px;
+            }
+        }
+
+        @media (max-height: 1040px) and (min-width: 1201px) {
+            .phone-housing {
+                transform: scale(0.88);
+            }
+
+            .phone-wrapper {
+                margin-right: 0;
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-height: 900px), (max-width: 1200px) and (min-width: 801px) {
+            .phone-housing {
+                transform: scale(0.75);
+            }
+
+            .phone-wrapper {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-height: 760px), (max-width: 800px) {
+            body {
+                padding: 0;
+                background: var(--bg-deep);
+                height: 100vh;
+                height: 100dvh;
+                overflow: hidden;
+            }
+
+            .main-layout {
+                gap: 0;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .phone-wrapper {
+                width: 100%;
+                flex: 1 1 0;
+                min-height: 0;
+                margin-bottom: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+            }
+
+            .phone-housing {
+                transform: none;
+                width: 100%;
+                height: 100%;
+                max-width: 100%;
+                padding: 10px 0;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+                background: transparent;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+                .game-header, .game-footer, .phone-housing::before, .phone-housing::after {
+                    display: none;
+                }
+
+            .screen-bezel {
+                width: 100%;
+                height: auto;
+                max-height: 100%;
+                aspect-ratio: 176 / 220;
+                margin: 0 auto;
+                border-radius: 4px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            }
+
+            #game-controller-module {
+                width: 100vw;
+                max-width: 100%;
+                padding: 15px 10px 25px 10px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+                border-top: 3px solid var(--bronze-border);
+                flex-shrink: 0;
+                box-shadow: 0 -5px 20px rgba(0,0,0,0.9);
+            }
+
+            .d-pad {
+                grid-template-columns: 60px 60px 60px;
+                grid-template-rows: 60px 60px 60px;
+            }
+
+            .action-pad {
+                gap: 15px;
+            }
+
+            .menu-row .btn-flat {
+                width: 75px;
+                height: 50px;
+                font-size: 14px;
+            }
+
+            .main-action-row .btn-attack {
+                width: 120px;
+                height: 70px;
+                font-size: 18px;
+            }
+
+            .items-row .btn-flat {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Carga automática sin menús intermedios -->
-    <iframe src="run.html?app=mi_juego&fractionScale=1"
-            allow="autoplay">
-    </iframe>
+
+    <div class="main-layout">
+
+        <!-- SECCIÓN 1: El Emulador / Teléfono -->
+        <div class="phone-wrapper">
+            <div class="phone-housing">
+                <div class="game-header">
+                    <img src="src/logo-3.png" alt="HERO FOREVER" class="game-logo-img">
+                    <div class="header-filigree">
+                        <div class="filigree-line"></div>
+                        <div class="filigree-gem"></div>
+                        <div class="filigree-line"></div>
+                    </div>
+                </div>
+
+                <div class="screen-bezel" id="screenBezel">
+                    <div class="screen-glare"></div>
+
+                    <!-- Botón Fullscreen flotante en la esquina superior -->
+                    <div class="btn-fullscreen-overlay" id="btnFullscreen" title="Pantalla Completa">⛶</div>
+
+                    <div id="loadingOverlay" class="loading-overlay" title="Click para forzar visualización">
+                        <div class="loading-rune-ring">
+                            <div class="spinner-rune"></div>
+                            <div class="spinner-core"></div>
+                        </div>
+                        <div class="loading-title">Cargando Hero:FOREVER</div>
+                        <div class="loading-subtitle">Resolución 176x220 &bull; Escala 4x</div>
+                    </div>
+
+                    <iframe id="gameFrame"
+                            src="run.html?app=game&fractionScale=1"
+                            frameborder="0" marginwidth="0" marginheight="0"
+                            scrolling="no" allow="autoplay; fullscreen" allowtransparency="true">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: El Módulo de Controles / Instrucciones de PC -->
+        <div id="game-controller-module">
+            <div id="pc-instructions">
+                <p>Movement: <span class="key-badge">W</span> <span class="key-badge">A</span> <span class="key-badge">S</span> <span class="key-badge">D</span></p>
+                <p>Main Action: <span class="key-badge">SPACE</span> (OK/Attack)</p>
+                <p>Navigation: <span class="key-badge">E</span> (OK) | <span class="key-badge">Q</span> (Back)</p>
+                <p>Items: <span class="key-badge">1</span> <span class="key-badge">2</span> <span class="key-badge">3</span></p>
+            </div>
+
+            <div id="mobile-controls">
+                <!-- Izquierda: D-Pad -->
+                <div class="d-pad">
+                    <div class="btn-flat btn-up" data-key="KeyW">▲</div>
+                    <div class="btn-flat btn-left" data-key="KeyA">◀</div>
+                    <div class="d-pad-center"></div>
+                    <div class="btn-flat btn-right" data-key="KeyD">▶</div>
+                    <div class="btn-flat btn-down" data-key="KeyS">▼</div>
+                </div>
+
+                <!-- Derecha: Botones de Acción -->
+                <div class="action-pad">
+                    <div class="menu-row">
+                        <div class="btn-flat" data-key="KeyQ">BACK</div>
+                        <div class="btn-flat" data-key="KeyE">OK</div>
+                    </div>
+
+                    <div class="main-action-row">
+                        <div class="btn-flat btn-attack" data-key="Space">ATTACK</div>
+                    </div>
+
+                    <div class="items-row">
+                        <div class="btn-flat" data-key="Digit1">1</div>
+                        <div class="btn-flat" data-key="Digit2">2</div>
+                        <div class="btn-flat" data-key="Digit3">3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const gameFrame = document.getElementById('gameFrame');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        let checkTimer = null;
+
+        function dismissOverlay() {
+            if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+                loadingOverlay.classList.add('hidden');
+                if (checkTimer) clearInterval(checkTimer);
+            }
+        }
+
+        function cleanIframeDocument() {
+            try {
+                const doc = gameFrame.contentDocument || (gameFrame.contentWindow && gameFrame.contentWindow.document);
+                if (!doc) return;
+
+                if (!doc.getElementById('j2me-viewport-fix')) {
+                    const resetStyle = doc.createElement('style');
+                    resetStyle.id = 'j2me-viewport-fix';
+                    resetStyle.textContent = `
+                            html, body, #screen-area {
+                                margin: 0 !important;
+                                padding: 0 !important;
+                                background-color: #000000 !important;
+                                background: #000000 !important;
+                                overflow: hidden !important;
+                            }
+                        `;
+                    if (doc.head) doc.head.appendChild(resetStyle);
+                }
+            } catch (err) { }
+        }
+
+        function checkGameStarted() {
+            try {
+                const doc = gameFrame.contentDocument || (gameFrame.contentWindow && gameFrame.contentWindow.document);
+                if (!doc) return false;
+
+                const displayCanvas = doc.getElementById('display');
+                const loadingText = doc.getElementById('loading');
+
+                if (displayCanvas) {
+                    const style = window.getComputedStyle(displayCanvas);
+                    const isVisible = style.display !== 'none' && style.visibility !== 'hidden';
+                    const hasSize = displayCanvas.offsetWidth > 0 || displayCanvas.width > 0;
+
+                    if (isVisible && hasSize) {
+                        dismissOverlay();
+                        return true;
+                    }
+                }
+
+                if (!loadingText && displayCanvas) {
+                    dismissOverlay();
+                    return true;
+                }
+            } catch (e) { return false; }
+            return false;
+        }
+
+        function setupObserver() {
+            cleanIframeDocument();
+            try {
+                const doc = gameFrame.contentDocument || (gameFrame.contentWindow && gameFrame.contentWindow.document);
+                if (doc) {
+                    const observer = new MutationObserver(() => {
+                        if (checkGameStarted()) observer.disconnect();
+                    });
+                    observer.observe(doc.body || doc.documentElement, {
+                        attributes: true, childList: true, subtree: true, attributeFilter: ['style', 'class']
+                    });
+                }
+            } catch (e) { }
+
+            checkTimer = setInterval(() => {
+                if (checkGameStarted()) clearInterval(checkTimer);
+            }, 100);
+        }
+
+        gameFrame.addEventListener('load', setupObserver);
+        window.addEventListener('message', (event) => {
+            if (event.data && (event.data.type === 'J2ME_READY' || event.data === 'ready')) dismissOverlay();
+        });
+        loadingOverlay.addEventListener('click', dismissOverlay);
+        setTimeout(dismissOverlay, 10000);
+
+        const btnFullscreen = document.getElementById('btnFullscreen');
+        if (btnFullscreen) {
+            const toggleFullscreen = (e) => {
+                e.preventDefault();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Error al habilitar pantalla completa: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            };
+            btnFullscreen.addEventListener('touchstart', toggleFullscreen, { passive: false });
+            btnFullscreen.addEventListener('click', toggleFullscreen);
+        }
+
+        function enviarTeclaAlJuego(tipo, codigoTecla) {
+            if (!gameFrame || !gameFrame.contentDocument) return;
+
+            const display = gameFrame.contentDocument.getElementById('display');
+            if (!display) return;
+
+            let letra = codigoTecla.replace('Key', '').replace('Digit', '');
+            if (codigoTecla === 'Space') letra = ' ';
+
+            const evento = new KeyboardEvent(tipo, {
+                code: codigoTecla, key: letra, ctrlKey: false, shiftKey: false, bubbles: true, cancelable: true
+            });
+            display.dispatchEvent(evento);
+        }
+
+        const botones = document.querySelectorAll('.btn-flat');
+        botones.forEach(boton => {
+            const codigo = boton.getAttribute('data-key');
+            if (!codigo) return;
+
+            boton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                enviarTeclaAlJuego('keydown', codigo);
+            }, { passive: false });
+
+            const soltar = (e) => {
+                e.preventDefault();
+                enviarTeclaAlJuego('keyup', codigo);
+            };
+
+            boton.addEventListener('touchend', soltar, { passive: false });
+            boton.addEventListener('touchcancel', soltar, { passive: false });
+
+            boton.addEventListener('mousedown', () => enviarTeclaAlJuego('keydown', codigo));
+            boton.addEventListener('mouseup', () => enviarTeclaAlJuego('keyup', codigo));
+            boton.addEventListener('mouseleave', (e) => {
+                if (e.buttons === 1) enviarTeclaAlJuego('keyup', codigo);
+            });
+        });
+
+        const keyToCodeMap = {
+            'w': 'KeyW', 'a': 'KeyA', 's': 'KeyS', 'd': 'KeyD',
+            'q': 'KeyQ', 'e': 'KeyE', ' ': 'Space',
+            '1': 'Digit1', '2': 'Digit2', '3': 'Digit3'
+        };
+
+        window.addEventListener('keydown', (e) => {
+            const code = keyToCodeMap[e.key.toLowerCase()];
+            if (code && !e.repeat) {
+                if (e.key === ' ') e.preventDefault();
+                enviarTeclaAlJuego('keydown', code);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            const code = keyToCodeMap[e.key.toLowerCase()];
+            if (code) enviarTeclaAlJuego('keyup', code);
+        });
+    </script>
 </body>
 </html>
