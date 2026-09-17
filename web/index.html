@@ -680,8 +680,8 @@
 
                     <div class="items-row">
                         <div class="btn-flat" data-key="Digit1">1</div>
-                        <div class="btn-flat" data-key="Digit2">2</div>
-                        <div class="btn-flat" data-key="Digit3">3</div>
+                        <div class="btn-flat" data-key="Digit3">2</div>
+                        <div class="btn-flat" data-key="Digit7">3</div>
                     </div>
                 </div>
             </div>
@@ -710,14 +710,14 @@
                     const resetStyle = doc.createElement('style');
                     resetStyle.id = 'j2me-viewport-fix';
                     resetStyle.textContent = `
-                            html, body, #screen-area {
-                                margin: 0 !important;
-                                padding: 0 !important;
-                                background-color: #000000 !important;
-                                background: #000000 !important;
-                                overflow: hidden !important;
-                            }
-                        `;
+                                html, body, #screen-area {
+                                    margin: 0 !important;
+                                    padding: 0 !important;
+                                    background-color: #000000 !important;
+                                    background: #000000 !important;
+                                    overflow: hidden !important;
+                                }
+                            `;
                     if (doc.head) doc.head.appendChild(resetStyle);
                 }
             } catch (err) { }
